@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Callback Functions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f7fafc; /* Light background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid #e2e8f0;
+        }
+        h1 {
+            color: #1e3a8a; /* Darker blue heading */
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #475569;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #f1f5f9; /* Light grey code background */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #1f2937;
+            border: 1px solid #cbd5e1;
+        }
+        button {
+            background-color: #3b82f6; /* Blue button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #2563eb; /* Darker blue on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid #bfdbfe; /* Light blue border */
+            border-radius: 8px;
+            background-color: #eff6ff; /* Very light blue background */
+            min-height: 100px;
+            text-align: left;
+            font-weight: bold;
+            color: #1e40af; /* Dark blue text */
+            white-space: pre-wrap; /* Preserve whitespace and wrap */
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.08);
+            max-height: 250px; /* Limit height */
+            overflow-y: auto; /* Add scroll for overflow */
+        }
+        .output-line {
+            margin-bottom: 5px;
+        }
+        .output-line:last-child {
+            margin-bottom: 0;
+        }
+        .success-message {
+            color: #16a34a; /* Green for success */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="container bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl">Understanding Callback Functions</h1>
+        <p class="text-gray-700">
+            This example demonstrates how a callback function can be used to control the
+            sequence of task execution in JavaScript.
+        </p>
+
+        <pre><code id="codeSnippet">
+// Define function taskOne
+function taskOne() {
+  console.log("Task 1 completed");
+  // In a real scenario, this might be a complex operation
+}
+
+// Define function taskTwo that accepts a callback
+function taskTwo(callback) {
+  console.log("Task 2 completed");
+  // Simulate some work, then execute the callback
+  if (typeof callback === 'function') {
+    callback(); // Execute the callback function
+  }
+}
+
+// Call taskTwo, passing taskOne as the callback
+// taskTwo(taskOne); // This will be called via the button
+        </code></pre>
+        <button onclick="runCallbackExample()">Run Callback Example</button>
+
+        <div id="output" class="text-lg">
+            Click the button to see the output here and in the console.
+        </div>
+    </div>
+
+    <script>
+        const outputDiv = document.getElementById('output');
+
+        /**
+         * Helper function to add messages to the UI output div.
+         * @param {string} message - The message to display.
+         * @param {string} className - Optional CSS class for styling the message.
+         */
+        function addOutput(message, className = '') {
+            const p = document.createElement('p');
+            p.textContent = message;
+            p.className = `output-line ${className}`;
+            outputDiv.appendChild(p);
+            outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
+        }
+
+        /**
+         * taskOne function
+         * Logs that Task 1 is completed.
+         */
+        function taskOne() {
+            console.log("Task 1 completed");
+            addOutput("Task 1 completed", "success-message");
+        }
+
+        /**
+         * taskTwo function
+         * Logs that Task 2 is completed and then executes the provided callback.
+         * @param {function} callback - The function to execute after Task 2.
+         */
+        function taskTwo(callback) {
+            console.log("Task 2 completed");
+            addOutput("Task 2 completed");
+
+            // Execute the callback function if it's indeed a function
+            if (typeof callback === 'function') {
+                // Simulate a slight delay for taskTwo (optional, but shows async potential)
+                setTimeout(() => {
+                    callback(); 
+                    console.log("Callback triggered by taskTwo.");
+                    addOutput("Callback triggered by taskTwo.");
+                }, 10); // Small delay to highlight async nature if present
+            }
+        }
+
+        /**
+         * runCallbackExample
+         * Orchestrates the execution by calling taskTwo with taskOne as its callback.
+         */
+        function runCallbackExample() {
+            outputDiv.innerHTML = ''; // Clear previous output
+            console.clear(); // Clear console for fresh run
+            addOutput("--- Running Callback Example ---");
+            console.log("--- Running Callback Example ---");
+
+            // Call taskTwo, passing taskOne as the callback function
+            // This ensures taskOne runs only after taskTwo finishes its operations.
+            taskTwo(taskOne);
+
+            console.log("--- End of Example Setup ---");
+            addOutput("--- End of Example Setup ---");
+        }
+    </script>
+</body>
+</html>
