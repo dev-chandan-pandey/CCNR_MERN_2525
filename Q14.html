@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debugging Closures: Correct Index Retention</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f8fafc; /* Light background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 700px;
+            width: 100%;
+            border: 1px solid #e2e8f0;
+        }
+        h1 {
+            color: #1e3a8a; /* Darker blue heading */
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #334155;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        p {
+            color: #475569;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            text-align: left;
+        }
+        pre {
+            background-color: #f1f5f9; /* Light grey code background */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #1f2937;
+            border: 1px solid #cbd5e1;
+        }
+        button {
+            background-color: #3b82f6; /* Blue button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #2563eb; /* Darker blue on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid #bfdbfe; /* Light blue border */
+            border-radius: 8px;
+            background-color: #eff6ff; /* Very light blue background */
+            min-height: 100px;
+            text-align: left;
+            font-weight: bold;
+            color: #1e40af; /* Dark blue text */
+            white-space: pre-wrap; /* Preserve whitespace and wrap */
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.08);
+            max-height: 250px; /* Limit height */
+            overflow-y: auto; /* Add scroll for overflow */
+        }
+        .output-line {
+            margin-bottom: 5px;
+        }
+        .output-line:last-child {
+            margin-bottom: 0;
+        }
+        .text-green {
+            color: #16a34a;
+        }
+        .text-red {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="container bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl">Debugging Closures for Correct Index</h1>
+        <p class="text-gray-600">
+            This example demonstrates a common bug with closures inside loops when using `var`,
+            and provides the correct implementation using `let`.
+        </p>
+
+        <h2>Problem Description:</h2>
+        <p>
+            In the original (buggy) code, a loop uses <code>var i</code>. Because <code>var</code> has function scope,
+            all the functions created inside the loop's iterations close over the <em>same single instance</em> of <code>i</code>.
+            By the time these functions are actually called (after the loop has completed), <code>i</code> has already
+            reached its final value (which is 5). Therefore, every function prints <code>"Index: 5"</code>.
+        </p>
+
+        <h2>Buggy Code:</h2>
+        <pre><code id="buggyCode">
+function createFunctionListBuggy() {
+  let functions = [];
+  for (var i = 0; i < 5; i++) {
+    functions.push(function () {
+      console.log("Index:", i);
+    });
+  }
+  return functions;
+}
+
+const functionListBuggy = createFunctionListBuggy();
+// When these are called, 'i' will already be 5 for all of them
+// functionListBuggy[0](); // Output: "Index: 5"
+// functionListBuggy[1](); // Output: "Index: 5"
+// ...
+        </code></pre>
+        <button onclick="runBuggyCode()" class="mb-5">Run Buggy Code</button>
+
+        <h2>Corrected Code Explanation:</h2>
+        <p>
+            The fix involves changing <code>var i</code> to <code>let i</code>.
+            Unlike <code>var</code>, <code>let</code> has <strong>block scope</strong>. This means that in each iteration of the `for` loop,
+            a <em>new lexical environment</em> (and thus a new binding for `i`) is created.
+            The inner function (the closure) then closes over the `i` from its specific iteration,
+            ensuring it retains the correct value for that iteration.
+        </p>
+
+        <h2>Corrected Code:</h2>
+        <pre><code id="fixedCode">
+function createFunctionListFixed() {
+  let functions = [];
+  for (let i = 0; i < 5; i++) { // Changed 'var' to 'let'
+    functions.push(function () {
+      console.log("Index:", i); // 'i' is correctly captured for each iteration
+    });
+  }
+  return functions;
+}
+
+const functionListFixed = createFunctionListFixed();
+// Now each function will print its unique index
+// functionListFixed[0](); // Expected Output: "Index: 0"
+// functionListFixed[1](); // Expected Output: "Index: 1"
+// ...
+        </code></pre>
+        <button onclick="runFixedCode()">Run Corrected Code</button>
+
+        <h2>Output:</h2>
+        <div id="output">
+            Click the buttons above to see the console output here.
+        </div>
+    </div>
+
+    <script>
+        const outputDiv = document.getElementById('output');
+
+        function addOutput(message, type = 'info') {
+            const p = document.createElement('p');
+            p.className = `output-line ${type === 'success' ? 'text-green' : (type === 'error' ? 'text-red' : '')}`;
+            p.textContent = message;
+            outputDiv.appendChild(p);
+            outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
+        }
+
+        function clearOutput() {
+            outputDiv.innerHTML = '';
+        }
+
+        // Buggy Code Logic
+        function createFunctionListBuggy() {
+            let functions = [];
+            for (var i = 0; i < 5; i++) {
+                functions.push(function () {
+                    console.log("Buggy Index:", i); // Log to console as well
+                    addOutput(`Buggy Output: Index: ${i}`, 'error');
+                });
+            }
+            return functions;
+        }
+
+        // Fixed Code Logic
+        function createFunctionListFixed() {
+            let functions = [];
+            for (let i = 0; i < 5; i++) { // The fix: 'let' instead of 'var'
+                functions.push(function () {
+                    console.log("Corrected Index:", i); // Log to console as well
+                    addOutput(`Corrected Output: Index: ${i}`, 'success');
+                });
+            }
+            return functions;
+        }
+
+        function runBuggyCode() {
+            clearOutput();
+            addOutput("--- Running Buggy Code ---");
+            const functionListBuggy = createFunctionListBuggy();
+            functionListBuggy[0]();
+            functionListBuggy[1]();
+            functionListBuggy[2]();
+            functionListBuggy[3]();
+            functionListBuggy[4]();
+            addOutput("--- Buggy Code Finished ---");
+        }
+
+        function runFixedCode() {
+            clearOutput();
+            addOutput("--- Running Corrected Code ---");
+            const functionListFixed = createFunctionListFixed();
+            functionListFixed[0]();
+            functionListFixed[1]();
+            functionListFixed[2]();
+            functionListFixed[3]();
+            functionListFixed[4]();
+            addOutput("--- Corrected Code Finished ---");
+        }
+    </script>
+</body>
+</html>
