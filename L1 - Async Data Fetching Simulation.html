@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nested Callbacks for Async Data Fetching</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f7f4; /* Light green-blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 650px;
+            width: 100%;
+            border: 1px solid #e0f2f1;
+        }
+        h1 {
+            color: #004d40; /* Dark teal heading */
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #26a69a; /* Medium teal text */
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #e0f2f1; /* Light teal code background */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #00695c; /* Darker teal for code */
+            border: 1px solid #b2dfdb;
+        }
+        button {
+            background-color: #26a69a; /* Teal button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #00897b; /* Darker teal on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #b2dfdb; /* Light teal border */
+            border-radius: 8px;
+            background-color: #e0f7fa; /* Very light teal background */
+            min-height: 150px;
+            text-align: left;
+            font-weight: bold;
+            color: #004d40; /* Dark teal text */
+            white-space: pre-wrap; /* Preserve whitespace and wrap */
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.08);
+            max-height: 300px; /* Limit height */
+            overflow-y: auto; /* Add scroll for overflow */
+        }
+        .output-line {
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px dotted rgba(0, 77, 64, 0.2);
+        }
+        .output-line:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        .success-message {
+            color: #388e3c; /* Darker green */
+        }
+        .info-message {
+            color: #00695c; /* Dark teal */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="container bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl">Async Data Fetching Simulation</h1>
+        <p class="text-gray-700">
+            This program simulates sequential API calls using <strong>nested callback functions</strong>.
+            Observe the order of messages appearing below and in your browser's console,
+            demonstrating asynchronous execution flow.
+        </p>
+
+        <pre><code id="codeSnippet">
+// Function to fetch user data
+function fetchUserData(callback) {
+  console.log("Fetching user data...");
+  addOutput("Fetching user data...", "info-message");
+
+  setTimeout(() => {
+    console.log("User data received");
+    addOutput("User data received");
+    // After 1 second, call the next function (fetchUserPosts) via callback
+    if (typeof callback === 'function') {
+      callback(); // This callback is expected to be fetchUserPosts
+    }
+  }, 1000); // 1 second delay
+}
+
+// Function to fetch user posts
+function fetchUserPosts(callback) {
+  console.log("Fetching user posts...");
+  addOutput("Fetching user posts...", "info-message");
+
+  setTimeout(() => {
+    console.log("User posts received");
+    addOutput("User posts received");
+    // After 1.5 seconds, call the final callback (allDataLoaded)
+    if (typeof callback === 'function') {
+      callback(); // This callback is expected to be allDataLoaded
+    }
+  }, 1500); // 1.5 second delay
+}
+
+// Final function to indicate all data is loaded
+function allDataLoadedSuccessfully() {
+  console.log("All data loaded successfully!");
+  addOutput("All data loaded successfully!", "success-message");
+}
+
+// Initiate the sequence:
+// fetchUserData(() => {
+//   fetchUserPosts(allDataLoadedSuccessfully);
+// });
+        </code></pre>
+
+        <button onclick="startSimulation()">Start Data Fetching Simulation</button>
+
+        <div id="output" class="text-base">
+            Click the button to start the simulation.
+            The output will appear here.
+        </div>
+    </div>
+
+    <script>
+        const outputDiv = document.getElementById('output');
+
+        /**
+         * Helper function to add messages to the UI output div.
+         * @param {string} message - The message to display.
+         * @param {string} className - Optional CSS class for styling the message.
+         */
+        function addOutput(message, className = '') {
+            const p = document.createElement('p');
+            p.textContent = message;
+            p.className = `output-line ${className}`;
+            outputDiv.appendChild(p);
+            outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
+        }
+
+        /**
+         * fetchUserData function
+         * Simulates fetching user data with a 1-second delay.
+         * Calls its callback upon completion.
+         * @param {function} callback - The function to call after user data is "received".
+         */
+        function fetchUserData(callback) {
+            console.log("Fetching user data...");
+            addOutput("Fetching user data...", "info-message");
+
+            setTimeout(() => {
+                console.log("User data received");
+                addOutput("User data received");
+                if (typeof callback === 'function') {
+                    callback(); // Execute the provided callback (which will be fetchUserPosts)
+                }
+            }, 1000); // Simulate 1 second delay
+        }
+
+        /**
+         * fetchUserPosts function
+         * Simulates fetching user posts with a 1.5-second delay.
+         * Calls its callback upon completion.
+         * @param {function} callback - The function to call after user posts are "received".
+         */
+        function fetchUserPosts(callback) {
+            console.log("Fetching user posts...");
+            addOutput("Fetching user posts...", "info-message");
+
+            setTimeout(() => {
+                console.log("User posts received");
+                addOutput("User posts received");
+                if (typeof callback === 'function') {
+                    callback(); // Execute the provided callback (which will be allDataLoadedSuccessfully)
+                }
+            }, 1500); // Simulate 1.5 second delay
+        }
+
+        /**
+         * allDataLoadedSuccessfully function
+         * Logs the final success message.
+         */
+        function allDataLoadedSuccessfully() {
+            console.log("All data loaded successfully!");
+            addOutput("All data loaded successfully!", "success-message");
+        }
+
+        /**
+         * startSimulation
+         * Initiates the entire asynchronous data fetching process.
+         */
+        function startSimulation() {
+            outputDiv.innerHTML = ''; // Clear previous UI output
+            console.clear(); // Clear console for a fresh run
+            addOutput("--- Simulation Started ---");
+            console.log("--- Simulation Started ---");
+
+            // Start the chain of asynchronous calls using nested callbacks
+            fetchUserData(() => { // When fetchUserData completes, this anonymous function runs
+                fetchUserPosts(() => { // When fetchUserPosts completes, this anonymous function runs
+                    allDataLoadedSuccessfully(); // Finally, allDataLoadedSuccessfully runs
+                });
+            });
+
+            console.log("--- Initial calls placed (synchronous part finished) ---");
+            addOutput("--- Initial calls placed (synchronous part finished) ---");
+        }
+
+        // Optional: Automatically start the simulation when the page loads
+        // window.onload = startSimulation;
+    </script>
+</body>
+</html>
