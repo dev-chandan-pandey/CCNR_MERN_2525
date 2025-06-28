@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic To-Do List</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles to enhance default Tailwind and set Inter font */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f4f8; /* Light blue-grey background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for better content flow */
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            margin-top: 30px;
+            border: 1px solid #e2e8f0;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: center; /* Center items when wrapped */
+        }
+        #taskInput {
+            flex-grow: 1; /* Allows input to take available space */
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            min-width: 200px; /* Ensure input is not too small */
+        }
+        #taskInput:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .main-button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .main-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+        .main-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            max-height: 400px; /* Limit height of the list */
+            overflow-y: auto; /* Enable scrolling for long lists */
+            background-color: #fcfcfc;
+        }
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Space out content and buttons */
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+            transition: background-color 0.2s ease;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        li:hover {
+            background-color: #eaf1f8;
+        }
+        .task-text {
+            flex-grow: 1; /* Allows text to take available space */
+            text-align: left;
+            margin-right: 10px; /* Space between text and buttons */
+        }
+        .task-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .task-buttons button {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .complete-btn {
+            background-color: #28a745; /* Green */
+            color: white;
+        }
+        .complete-btn:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+        .delete-btn {
+            background-color: #dc3545; /* Red */
+            color: white;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+
+        /* Style for completed tasks */
+        .completed-task .task-text {
+            text-decoration: line-through;
+            color: #6c757d; /* Grey out completed text */
+            font-style: italic;
+        }
+        .completed-task .complete-btn {
+            background-color: #6c757d; /* Grey button for completed */
+            cursor: default;
+        }
+        .completed-task .complete-btn:hover {
+            background-color: #6c757d; /* No hover effect on grey button */
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        /* Alert/Message Box Styling (instead of native alert) */
+        #messageBox {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f44336; /* Red for error */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #messageBox.show {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px;
+                margin-top: 15px;
+            }
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+            .input-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+            #taskInput {
+                min-width: unset;
+                width: 100%;
+            }
+            .main-button {
+                width: 100%;
+            }
+            li {
+                flex-direction: column; /* Stack text and buttons on small screens */
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .task-text {
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+            .task-buttons {
+                width: 100%;
+                justify-content: flex-end; /* Align buttons to the right */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My Dynamic To-Do List</h1>
+
+        <div class="input-section">
+            <input type="text" id="taskInput" placeholder="Add a new task...">
+            <button id="addTaskBtn" class="main-button">Add Task</button>
+        </div>
+
+        <ul id="taskList">
+            <!-- Tasks will be dynamically added here -->
+        </ul>
+    </div>
+
+    <!-- Custom Message Box (instead of alert) -->
+    <div id="messageBox"></div>
+
+    <script>
+        // Get references to DOM elements
+        const taskInput = document.getElementById('taskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskList = document.getElementById('taskList'); // This is the <ul>
+        const messageBox = document.getElementById('messageBox');
+
+        // Function to display a custom message (replaces native alert)
+        function showMessage(message, type = 'error') {
+            messageBox.textContent = message;
+            messageBox.className = `message-box show bg-${type === 'error' ? 'red-500' : 'blue-500'}`;
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // Function to add a new task to the list
+        addTaskBtn.addEventListener('click', function() {
+            const taskText = taskInput.value.trim(); // Get task text and remove leading/trailing whitespace
+
+            if (taskText === '') {
+                showMessage("Please enter a task!");
+                return; // Stop execution if input is empty
+            }
+
+            // Create new list item (<li>)
+            const listItem = document.createElement('li');
+            listItem.classList.add('flex', 'items-center', 'justify-between', 'py-3', 'px-4', 'border-b', 'border-gray-100'); // Tailwind classes
+
+            // Create a span for the task text
+            const taskSpan = document.createElement('span');
+            taskSpan.textContent = taskText;
+            taskSpan.classList.add('task-text', 'flex-1', 'mr-2');
+
+            // Create a div for buttons
+            const buttonContainer = document.createElement('div');
+            buttonContainer.classList.add('task-buttons', 'flex', 'gap-2');
+
+            // Create Complete button
+            const completeBtn = document.createElement('button');
+            completeBtn.textContent = 'Complete';
+            completeBtn.classList.add('complete-btn', 'px-3', 'py-2', 'rounded-md', 'text-sm', 'font-semibold', 'text-white', 'bg-green-500', 'hover:bg-green-600', 'transition', 'duration-200'); // Tailwind classes
+
+            // Create Delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.classList.add('delete-btn', 'px-3', 'py-2', 'rounded-md', 'text-sm', 'font-semibold', 'text-white', 'bg-red-500', 'hover:bg-red-600', 'transition', 'duration-200'); // Tailwind classes
+
+            // Append buttons to their container
+            buttonContainer.appendChild(completeBtn);
+            buttonContainer.appendChild(deleteBtn);
+
+            // Append task text and button container to the list item
+            listItem.appendChild(taskSpan);
+            listItem.appendChild(buttonContainer);
+
+            // Append the new list item to the unordered list
+            taskList.appendChild(listItem);
+
+            // Clear the input field
+            taskInput.value = '';
+            taskInput.focus(); // Keep focus on input for quick entry
+            console.log(`Task added: "${taskText}"`);
+        });
+
+        // Use event delegation on the ul (taskList) to handle clicks on dynamically created buttons
+        taskList.addEventListener('click', function(event) {
+            const target = event.target; // The actual element that was clicked
+
+            // Check if a Complete button was clicked
+            if (target.classList.contains('complete-btn')) {
+                const listItem = target.closest('li'); // Get the parent <li> of the clicked button
+                if (listItem) {
+                    // Toggle the 'completed-task' class on the list item
+                    listItem.classList.toggle('completed-task');
+                    console.log(`Task "${listItem.querySelector('.task-text').textContent}" toggled completion.`);
+                    // Optional: Change button text based on state
+                    if (listItem.classList.contains('completed-task')) {
+                        target.textContent = 'Uncomplete';
+                    } else {
+                        target.textContent = 'Complete';
+                    }
+                }
+            }
+            // Check if a Delete button was clicked
+            else if (target.classList.contains('delete-btn')) {
+                const listItem = target.closest('li'); // Get the parent <li>
+                if (listItem) {
+                    console.log(`Task "${listItem.querySelector('.task-text').textContent}" deleted.`);
+                    taskList.removeChild(listItem); // Remove the list item from the ul
+                }
+            }
+        });
+    </script>
+</body>
+</html>
