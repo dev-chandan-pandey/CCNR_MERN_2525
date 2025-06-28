@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debugging Task</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Basic styling to make the elements visible and centered for clarity */
+    body {
+        font-family: "Inter", sans-serif;
+        background-color: #f0f4f8; /* Light blue-grey background */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    p#message {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        color: #34495e;
+        padding: 10px;
+        border: 1px solid #d3dce0;
+        border-radius: 8px;
+        background-color: #ffffff;
+        min-width: 200px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    #box {
+        width: 150px; /* Increased size for better visibility */
+        height: 150px; /* Increased size for better visibility */
+        background-color: lightgray;
+        margin: 20px 0;
+        border: 2px solid #95a5a6; /* Added a border */
+        border-radius: 12px; /* Rounded corners */
+        transition: background-color 0.3s ease; /* Smooth transition for color change */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7f8c8d;
+        font-weight: bold;
+    }
+    button {
+        background-color: #3498db; /* Blue button */
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin: 10px;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    button:hover {
+        background-color: #2980b9; /* Darker blue on hover */
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    }
+    button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <p id="message">Original Message</p>
+  <button id="textButton">Change Text</button>
+  <br><br>
+  <div id="box">Click buttons to interact!</div>
+  <button id="colorButton">Change Background</button>
+
+  <script>
+    // JavaScript code with bugs fixed
+
+    // Bug 1 & 2: Incorrect ID in querySelector AND incorrect method for textButton
+    // Fix: Changed '#massage' to '#message' (correct ID)
+    // Fix: Changed 'getElementByName' to 'getElementById' (correct method)
+    const para = document.getElementById('message'); 
+    const textButton = document.getElementById('textButton'); 
+
+    // Bug 3: Incorrect method name 'addClickEventListener'
+    // Fix: Changed 'addClickEventListener' to 'addEventListener'
+    textButton.addEventListener('click', () => { 
+      // Bug 4: Incorrect property 'contentText'
+      // Fix: Changed 'contentText' to 'textContent'
+      if (para) { // Defensive check: ensure element exists before manipulating
+          para.textContent = 'New Message'; 
+          console.log("Paragraph text changed to 'New Message'.");
+      } else {
+          console.error("Paragraph with ID 'message' not found!");
+      }
+    });
+
+    const box = document.getElementById('box');
+    const colorButton = document.getElementById('colorButton');
+
+    colorButton.addEventListener('click', () => {
+      // Bug 5: Typo in 'style' property ('styl' instead of 'style')
+      // Fix: Changed 'box.styl' to 'box.style'
+      if (box) { // Defensive check: ensure element exists
+          box.style.backgroundColor = 'blue'; 
+          console.log("Box background changed to blue.");
+      } else {
+          console.error("Box with ID 'box' not found!");
+      }
+    });
+  </script>
+</body>
+</html>
