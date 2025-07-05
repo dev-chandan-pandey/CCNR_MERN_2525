@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Screen Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #e0f2f7; /* Light blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            border: 1px solid #b3e5fc; /* Subtle blue border */
+        }
+        h1 {
+            color: #01579b; /* Dark blue heading */
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #263238; /* Dark grey text */
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #e1f5fe; /* Very light blue code background */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #0277bd; /* Blue for code */
+            border: 1px solid #81d4fa;
+        }
+        button {
+            background-color: #03a9f4; /* Light blue button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #0288d1; /* Darker blue on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #81d4fa; /* Medium blue border */
+            border-radius: 8px;
+            background-color: #bbdefb; /* Medium light blue background */
+            min-height: 120px;
+            text-align: left;
+            font-weight: bold;
+            color: #01579b; /* Dark blue text */
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.08);
+            max-height: 250px; /* Limit height */
+            overflow-y: auto; /* Add scroll for overflow */
+        }
+        .loading-message {
+            color: #0277bd; /* Blue */
+        }
+        .success-message {
+            color: #2e7d32; /* Green */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Loading Screen Simulation</h1>
+        <p>
+            Click the button to simulate a loading process.
+            "Loading..." messages will appear every second for 5 seconds,
+            after which "Loaded successfully!" will be displayed.
+            Watch the output below and your browser's console.
+        </p>
+
+        <pre><code>
+let loadingIntervalId; // Variable to store the interval ID
+let counter = 0;
+
+function startLoadingSimulation() {
+  counter = 0; // Reset counter for new simulation
+  document.getElementById('output').innerHTML = ''; // Clear previous output
+  addOutput("Starting loading simulation...", 'loading-message');
+  console.log("Starting loading simulation...");
+
+  // Start logging "Loading..." every 1 second
+  loadingIntervalId = setInterval(() => {
+    counter++;
+    const message = `Loading... (${counter}s)`;
+    addOutput(message, 'loading-message');
+    console.log(message);
+  }, 1000); // 1000 milliseconds = 1 second
+
+  // After 5 seconds, stop the loading messages
+  setTimeout(() => {
+    clearInterval(loadingIntervalId); // Stop the setInterval
+    const successMessage = "Loaded successfully!";
+    addOutput(successMessage, 'success-message');
+    console.log(successMessage);
+    console.log("Simulation finished.");
+  }, 5000); // 5000 milliseconds = 5 seconds
+}
+
+// Helper function to add output to the UI
+function addOutput(message, className = '') {
+    const outputDiv = document.getElementById('output');
+    const p = document.createElement('p');
+    p.innerHTML = message;
+    p.className = className;
+    outputDiv.appendChild(p);
+    outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
+}
+
+// Call the function to start the simulation on page load (optional, button for user control)
+// startLoadingSimulation();
+        </code></pre>
+
+        <button onclick="startLoadingSimulation()">Start Loading Simulation</button>
+
+        <div id="output">
+            Click the "Start Loading Simulation" button to begin.
+        </div>
+    </div>
+
+    <script>
+        let loadingIntervalId; // Variable to store the interval ID for clearInterval
+        let counter = 0; // To track seconds for messages
+
+        /**
+         * addOutput
+         * Helper function to append messages to the UI output div.
+         * @param {string} message - The message to display.
+         * @param {string} className - Optional CSS class for styling the message.
+         */
+        function addOutput(message, className = '') {
+            const outputDiv = document.getElementById('output');
+            const p = document.createElement('p');
+            p.innerHTML = message;
+            p.className = className;
+            outputDiv.appendChild(p);
+            // Auto-scroll to the bottom
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+
+        /**
+         * startLoadingSimulation
+         * Initiates the loading screen simulation.
+         * Sets an interval for repeating messages and a timeout to clear the interval.
+         */
+        function startLoadingSimulation() {
+            // Clear any previous interval if the button is clicked multiple times before completion
+            if (loadingIntervalId) {
+                clearInterval(loadingIntervalId);
+            }
+            counter = 0; // Reset counter for a fresh simulation
+            document.getElementById('output').innerHTML = ''; // Clear previous output in UI
+
+            addOutput("Starting loading simulation...", 'loading-message');
+            console.log("Starting loading simulation...");
+
+            // 1. Start by logging "Loading..." every 1 second.
+            loadingIntervalId = setInterval(() => {
+                counter++;
+                const message = `Loading... (${counter}s)`;
+                addOutput(message, 'loading-message');
+                console.log(message);
+            }, 1000); // 1000 milliseconds = 1 second
+
+            // 2. After 5 seconds, stop the loading messages and log "Loaded successfully!".
+            setTimeout(() => {
+                clearInterval(loadingIntervalId); // Stop the setInterval using its ID
+                const successMessage = "Loaded successfully!";
+                addOutput(successMessage, 'success-message');
+                console.log(successMessage);
+                console.log("Simulation finished.");
+            }, 5000); // 5000 milliseconds = 5 seconds
+        }
+
+        // Optional: Start simulation automatically on page load
+        // window.onload = startLoadingSimulation;
+    </script>
+</body>
+</html>

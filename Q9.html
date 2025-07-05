@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Copy with JSON.stringify()</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f7f4; /* Light green-blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 700px;
+            width: 100%;
+            border: 1px solid #e0f2f1;
+        }
+        h1 {
+            color: #004d40; /* Dark teal heading */
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #26a69a; /* Medium teal text */
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #e0f2f1; /* Light teal code background */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #00695c; /* Darker teal for code */
+            border: 1px solid #b2dfdb;
+        }
+        button {
+            background-color: #26a69a; /* Teal button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #00897b; /* Darker teal on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .output-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #b2dfdb; /* Light teal border */
+            border-radius: 8px;
+            background-color: #e0f7fa; /* Very light teal background */
+            min-height: 120px;
+            text-align: left;
+            font-weight: bold;
+            color: #004d40; /* Dark teal text */
+            white-space: pre-wrap; /* Preserve whitespace and wrap */
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.08);
+        }
+        .output-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #004d40;
+        }
+        .output-code {
+            font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+            background-color: #c8e6c9; /* Lighter green for code block */
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            display: block;
+            overflow-x: auto;
+        }
+        .text-green-success {
+            color: #388e3c; /* Darker green */
+        }
+        .text-blue-info {
+            color: #1976d2; /* Darker blue */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="container bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl">L1: Deep vs Shallow Copy</h1>
+        <p class="text-gray-700">
+            This example demonstrates how to perform a <strong>deep copy</strong> of an object
+            using <code>JSON.stringify()</code> and <code>JSON.parse()</code>.
+            This method is effective for objects composed of JSON-compatible data types.
+        </p>
+
+        <p class="text-gray-600 italic">
+            A deep copy ensures that nested objects and arrays are also duplicated,
+            so changes to the clone do not affect the original.
+        </p>
+
+        <h2>Problem Statement:</h2>
+        <p>
+            Create a function `deepClone(obj)` that creates a deep copy of a given object.
+            Modify the cloned object to demonstrate that the original remains unchanged.
+        </p>
+
+        <pre><code>
+function deepClone(obj) {
+  // Convert the object to a JSON string
+  const jsonString = JSON.stringify(obj);
+  
+  // Parse the JSON string back into a new JavaScript object
+  const clonedObj = JSON.parse(jsonString);
+  
+  return clonedObj;
+}
+
+// Example Usage:
+let originalObject = { name: "Alice", hobbies: ["reading", "traveling"] };
+let clonedObject = deepClone(originalObject);
+
+// Modify the cloned object
+clonedObject.hobbies.push("coding");
+clonedObject.name = "Bob"; // Also modify a primitive property
+
+// Log both to console to see the difference
+// console.log("Original:", originalObject);
+// console.log("Clone:", clonedObject);
+        </code></pre>
+
+        <button onclick="runDeepCloneExample()">Run Deep Clone Example</button>
+
+        <div id="output" class="output-section">
+            <div class="output-label">Initial State:</div>
+            <div id="initialOriginal" class="output-code"></div>
+            <div id="initialClone" class="output-code"></div>
+            
+            <div class="output-label mt-4">After Modifying Clone:</div>
+            <div id="finalOriginal" class="output-code text-blue-info"></div>
+            <div id="finalClone" class="output-code text-green-success"></div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * deepClone function
+         * Creates a deep copy of a given object using JSON.stringify() and JSON.parse().
+         * NOTE: This method has limitations (e.g., cannot clone functions, Date objects, undefined, Maps, Sets, etc.)
+         * @param {Object} obj - The object to be cloned.
+         * @returns {Object} A deep clone of the original object.
+         */
+        function deepClone(obj) {
+            // Step 1: Convert the JavaScript object into a JSON string.
+            // This flattens the object into a textual representation.
+            const jsonString = JSON.stringify(obj);
+            
+            // Step 2: Parse the JSON string back into a new JavaScript object.
+            // This creates completely new objects/arrays in memory, effectively deep copying.
+            const clonedObj = JSON.parse(jsonString);
+            
+            return clonedObj;
+        }
+
+        function runDeepCloneExample() {
+            // Example Input:
+            let originalObject = { 
+                name: "Alice", 
+                hobbies: ["reading", "traveling"],
+                address: {
+                    city: "New York",
+                    zip: "10001"
+                },
+                details: undefined, // undefined properties are lost with JSON.stringify
+                getAge: function() { return 30; } // Functions are lost with JSON.stringify
+            };
+
+            // Display initial state
+            document.getElementById('initialOriginal').textContent = JSON.stringify(originalObject, null, 2);
+            document.getElementById('initialClone').textContent = "Cloned object not yet created for initial display.";
+
+
+            // Create a deep clone
+            let clonedObject = deepClone(originalObject);
+
+            // Display clone after creation (it should be identical to original initially)
+            document.getElementById('initialClone').textContent = JSON.stringify(clonedObject, null, 2);
+
+            // Modify the cloned object
+            // Modifying a nested array
+            clonedObject.hobbies.push("coding");
+            // Modifying a primitive property
+            clonedObject.name = "Bob";
+            // Modifying a nested object property
+            clonedObject.address.city = "San Francisco";
+
+            // Attempting to modify a lost property (will just add it to clone)
+            clonedObject.details = "some detail";
+            clonedObject.newProp = "new value";
+
+
+            // Log both to console to clearly see the difference
+            console.log("--- Deep Clone Example ---");
+            console.log("Original Object (after cloning & modifying clone):", originalObject);
+            console.log("Cloned Object (after modification):", clonedObject);
+            console.log("--- End Deep Clone Example ---");
+
+            // Update UI with final states
+            document.getElementById('finalOriginal').textContent = `Original: ${JSON.stringify(originalObject, null, 2)}`;
+            document.getElementById('finalClone').textContent = `Clone: ${JSON.stringify(clonedObject, null, 2)}`;
+        }
+
+        // Run the example automatically on page load for initial display
+        window.onload = runDeepCloneExample;
+    </script>
+</body>
+</html>

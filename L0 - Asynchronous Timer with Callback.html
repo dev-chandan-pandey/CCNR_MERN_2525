@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asynchronous Timer with Callback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f7f4; /* Light green-blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 650px;
+            width: 100%;
+            border: 1px solid #e0f2f1;
+        }
+        h1 {
+            color: #004d40; /* Dark teal heading */
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #26a69a; /* Medium teal text */
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #e0f2f1; /* Light teal code background */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #00695c; /* Darker teal for code */
+            border: 1px solid #b2dfdb;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #004d40;
+        }
+        .input-group input[type="number"] {
+            padding: 10px 15px;
+            border: 1px solid #80cbc4; /* Light teal border */
+            border-radius: 8px;
+            width: 80%;
+            max-width: 200px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .input-group input[type="number"]:focus {
+            border-color: #00897b; /* Stronger teal on focus */
+            box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.2);
+        }
+        button {
+            background-color: #26a69a; /* Teal button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #00897b; /* Darker teal on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #b2dfdb; /* Light teal border */
+            border-radius: 8px;
+            background-color: #e0f7fa; /* Very light teal background */
+            min-height: 100px;
+            text-align: left;
+            font-weight: bold;
+            color: #004d40; /* Dark teal text */
+            white-space: pre-wrap; /* Preserve whitespace and wrap */
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.08);
+            max-height: 250px; /* Limit height */
+            overflow-y: auto; /* Add scroll for overflow */
+        }
+        .output-line {
+            margin-bottom: 5px;
+        }
+        .output-line:last-child {
+            margin-bottom: 0;
+        }
+        .info-message {
+            color: #00695c;
+        }
+        .finish-message {
+            color: #388e3c; /* Green for success */
+        }
+        .error-message {
+            color: #d32f2f; /* Red for error */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="container bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl">Asynchronous Timer with Callback</h1>
+        <p class="text-gray-700">
+            This program demonstrates creating an asynchronous timer using <code>setTimeout</code>
+            and a callback function to signal completion.
+        </p>
+
+        <pre><code id="codeSnippet">
+/**
+ * timer function
+ * Simulates a countdown timer and executes a callback upon completion.
+ * @param {number} duration - The duration of the timer in milliseconds.
+ * @param {function} onComplete - The callback function to execute when the timer ends.
+ * It will receive a message string as its argument.
+ */
+function timer(duration, onComplete) {
+  // Use setTimeout to delay the execution of the callback
+  setTimeout(() => {
+    // Construct the message indicating the timer has finished
+    const finishMessage = "Timer of " + duration + " ms finished!";
+    
+    // Execute the onComplete callback with the finish message
+    if (typeof onComplete === 'function') {
+      onComplete(finishMessage);
+    } else {
+      console.warn("onComplete is not a function or missing.");
+      addOutput("Error: onComplete is not a function or missing.", "error-message");
+    }
+  }, duration); // The duration is passed as the delay for setTimeout
+}
+
+// Example Usage:
+// timer(3000, (message) => {
+//   console.log(message); // This will log "Timer of 3000 ms finished!" after 3 seconds
+// });
+        </code></pre>
+
+        <div class="input-group">
+            <label for="timerDuration">Timer Duration (ms):</label>
+            <input type="number" id="timerDuration" value="3000" min="0">
+        </div>
+
+        <button onclick="startTimerExample()">Start Timer</button>
+
+        <div id="output" class="text-base">
+            Click the button to start the timer.
+            Output will appear here and in the console after the delay.
+        </div>
+    </div>
+
+    <script>
+        const outputDiv = document.getElementById('output');
+
+        /**
+         * Helper function to add messages to the UI output div.
+         * @param {string} message - The message to display.
+         * @param {string} className - Optional CSS class for styling the message.
+         */
+        function addOutput(message, className = '') {
+            const p = document.createElement('p');
+            p.textContent = message;
+            p.className = `output-line ${className}`;
+            outputDiv.appendChild(p);
+            outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
+        }
+
+        /**
+         * timer function
+         * Simulates a countdown timer and executes a callback upon completion.
+         * @param {number} duration - The duration of the timer in milliseconds.
+         * @param {function} onComplete - The callback function to execute when the timer ends.
+         * It will receive a message string as its argument.
+         */
+        function timer(duration, onComplete) {
+            console.log(`Starting timer for ${duration} ms...`);
+            addOutput(`Starting timer for ${duration} ms...`, "info-message");
+
+            // Use setTimeout to delay the execution of the callback
+            setTimeout(() => {
+                // Construct the message indicating the timer has finished
+                const finishMessage = "Timer of " + duration + " ms finished!";
+                
+                // Execute the onComplete callback with the finish message
+                if (typeof onComplete === 'function') {
+                    onComplete(finishMessage);
+                } else {
+                    console.warn("Warning: onComplete is not a function or missing.");
+                    addOutput("Warning: Callback function is missing or invalid.", "error-message");
+                }
+            }, duration); // The duration is passed as the delay for setTimeout
+        }
+
+        /**
+         * startTimerExample
+         * Orchestrates the timer demonstration based on UI input.
+         */
+        function startTimerExample() {
+            outputDiv.innerHTML = ''; // Clear previous output
+            console.clear(); // Clear console for a fresh run
+            addOutput("--- Timer Example Started ---");
+            console.log("--- Timer Example Started ---");
+
+            const durationInput = document.getElementById('timerDuration');
+            const duration = parseInt(durationInput.value);
+
+            if (isNaN(duration) || duration < 0) {
+                addOutput('<span class="error-message">Please enter a valid non-negative duration.</span>');
+                console.error("Invalid duration entered.");
+                return;
+            }
+
+            // Call the timer function with the specified duration and a callback
+            timer(duration, (message) => {
+                // This callback will be executed by the timer function when it completes
+                console.log(message); // Log the finish message
+                addOutput(message, "finish-message");
+                addOutput("--- Timer Example Finished ---");
+                console.log("--- Timer Example Finished ---");
+            });
+        }
+    </script>
+</body>
+</html>

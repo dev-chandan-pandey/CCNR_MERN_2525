@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using apply() to Multiply Numbers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f9ff; /* Light blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            border: 1px solid #e0f2f7;
+        }
+        h1 {
+            color: #0c4a6e; /* Darker blue heading */
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #334155;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #e0f7fa; /* Very light blue code background */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #0e7490; /* Teal color for code */
+            border: 1px solid #b2ebf2;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #294c63;
+        }
+        .input-group input[type="number"] {
+            padding: 10px 15px;
+            border: 1px solid #a7d9ed; /* Light blue border */
+            border-radius: 8px;
+            width: 80%;
+            max-width: 200px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .input-group input[type="number"]:focus {
+            border-color: #0284c7; /* Stronger blue on focus */
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+        }
+        button {
+            background-color: #0ea5e9; /* Sky blue button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #0284c7; /* Darker sky blue on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 25px;
+            padding: 15px;
+            border: 1px solid #bae6fd; /* Lighter sky blue border */
+            border-radius: 8px;
+            background-color: #e0f2fe; /* Very light blue background */
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #0369a1; /* Strong blue text */
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .output-success {
+            color: #059669; /* Green for success */
+        }
+        .output-error {
+            color: #ef4444; /* Red for error */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="container bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl">Using apply() to Multiply Numbers</h1>
+        <p class="text-gray-700">
+            This example demonstrates the use of the <code>apply()</code> method to invoke a function
+            with a specified <code>this</code> context and an array of arguments.
+        </p>
+
+        <pre><code>
+function multiplyNumbers(num1, num2) {
+  // In this simple case, 'this' context isn't strictly needed for multiplication,
+  // so we'll use 'null' as the 'thisArg'.
+  return num1 * num2;
+}
+
+// How it's used with apply():
+// const product = multiplyNumbers.apply(null, [number1, number2]);
+        </code></pre>
+
+        <div class="input-group">
+            <label for="num1">Number 1:</label>
+            <input type="number" id="num1" value="5">
+        </div>
+        <div class="input-group">
+            <label for="num2">Number 2:</label>
+            <input type="number" id="num2" value="10">
+        </div>
+
+        <button onclick="calculateAndDisplay()">Multiply using apply()</button>
+
+        <div id="output" class="text-lg">
+            Result will appear here.
+        </div>
+    </div>
+
+    <script>
+        /**
+         * multiplyNumbers function
+         * Accepts two numbers and returns their product.
+         * The 'this' context is not relevant for this simple arithmetic,
+         * but 'apply()' still requires a 'thisArg' as its first argument.
+         * @param {number} num1 - The first number.
+         * @param {number} num2 - The second number.
+         * @returns {number} The product of num1 and num2.
+         */
+        function multiplyNumbers(num1, num2) {
+            return num1 * num2;
+        }
+
+        /**
+         * calculateAndDisplay
+         * Retrieves numbers from input fields, uses apply() to call multiplyNumbers,
+         * and displays the result in the UI.
+         */
+        function calculateAndDisplay() {
+            const num1Input = document.getElementById('num1');
+            const num2Input = document.getElementById('num2');
+            const outputDiv = document.getElementById('output');
+
+            const num1 = parseFloat(num1Input.value);
+            const num2 = parseFloat(num2Input.value);
+
+            // Validate inputs
+            if (isNaN(num1) || isNaN(num2)) {
+                outputDiv.innerHTML = '<span class="output-error">Please enter valid numbers.</span>';
+                console.error("Invalid input: Please enter valid numbers.");
+                return;
+            }
+
+            // Use the apply() method to call multiplyNumbers
+            // The first argument is the 'this' context (null in this case as it's not used)
+            // The second argument is an array of arguments to be passed to multiplyNumbers
+            const product = multiplyNumbers.apply(null, [num1, num2]);
+
+            // Display the result
+            outputDiv.innerHTML = `<span class="output-success">Product: ${product}</span>`;
+            console.log(`Using apply(): ${num1} * ${num2} = ${product}`);
+        }
+    </script>
+</body>
+</html>

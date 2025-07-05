@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asynchronous Code with setTimeout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f8f9fa; /* Light background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #212529; /* Dark heading */
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #495057; /* Grey text */
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #e9ecef; /* Lighter grey code background */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #343a40; /* Darker grey for code */
+            border: 1px solid #dee2e6;
+        }
+        button {
+            background-color: #007bff; /* Blue button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 25px;
+            padding: 15px;
+            border: 1px solid #ced4da; /* Medium grey border */
+            border-radius: 8px;
+            background-color: #f1f3f5; /* Off-white background */
+            min-height: 80px;
+            text-align: left;
+            font-weight: bold;
+            color: #343a40;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .delayed-message {
+            color: #007bff; /* Blue for delayed message */
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Asynchronous Code with setTimeout</h1>
+        <p>
+            This example demonstrates asynchronous code execution using <code>setTimeout</code>.
+            "Message 1" and "Message 3" will appear immediately, followed by
+            "Message 2 after 2 seconds" after a delay.
+            Check your browser's developer console for the exact timing.
+        </p>
+
+        <pre><code>
+function runAsynchronousTasks() {
+  console.log("Message 1");
+
+  setTimeout(() => {
+    console.log("Message 2 after 2 seconds");
+  }, 2000); // 2000 milliseconds = 2 seconds
+
+  console.log("Message 3");
+}
+
+// Call the function to see the asynchronous execution
+runAsynchronousTasks();
+        </code></pre>
+
+        <button onclick="runAsynchronousTasks()">Run Asynchronous Tasks</button>
+
+        <div id="output">
+            Output will appear here. Click the button to execute the code.
+        </div>
+    </div>
+
+    <script>
+        // Function to demonstrate asynchronous execution with setTimeout
+        function runAsynchronousTasks() {
+            // Clear previous output in the UI for clarity
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '';
+            
+            // Print "Message 1" immediately (synchronous)
+            console.log("Message 1");
+            outputDiv.innerHTML += '<p>Message 1</p>';
+
+            // Use setTimeout to print "Message 2 after 2 seconds" after a delay (asynchronous)
+            setTimeout(() => {
+                console.log("Message 2 after 2 seconds");
+                outputDiv.innerHTML += '<p class="delayed-message">Message 2 after 2 seconds</p>';
+                outputDiv.innerHTML += '<p>--- Asynchronous tasks completed ---</p>';
+                console.log("--- Asynchronous tasks completed ---");
+            }, 2000); // 2000 milliseconds = 2 seconds
+
+            // Print "Message 3" immediately (synchronous)
+            console.log("Message 3");
+            outputDiv.innerHTML += '<p>Message 3</p>';
+
+            outputDiv.innerHTML += '<p>--- Synchronous tasks completed, waiting for delayed message ---</p>';
+            console.log("--- Synchronous tasks completed, waiting for delayed message ---");
+        }
+
+        // Run on load for initial display
+        window.onload = runAsynchronousTasks;
+    </script>
+</body>
+</html>

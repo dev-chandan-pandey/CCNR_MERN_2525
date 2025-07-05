@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Async/Await Data Fetching with Error Handling</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f8f9fa; /* Light background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 700px;
+            width: 100%;
+        }
+        h1 {
+            color: #212529; /* Dark heading */
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #495057; /* Grey text */
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        pre {
+            background-color: #e9ecef; /* Lighter grey code background */
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #343a40; /* Darker grey for code */
+            border: 1px solid #dee2e6;
+        }
+        button {
+            background-color: #007bff; /* Blue button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid #ced4da; /* Medium grey border */
+            border-radius: 8px;
+            background-color: #f1f3f5; /* Off-white background */
+            min-height: 120px;
+            text-align: left;
+            font-weight: bold;
+            color: #343a40;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            max-height: 300px; /* Limit height */
+            overflow-y: auto; /* Add scroll for overflow */
+        }
+        .output-line {
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px dotted rgba(52, 58, 64, 0.2);
+        }
+        .output-line:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        .success-message {
+            color: #28a745; /* Green for success */
+        }
+        .error-message {
+            color: #dc3545; /* Red for error */
+        }
+        .info-message {
+            color: #007bff; /* Blue for info */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simulating Asynchronous Data Fetching with Error Handling</h1>
+        <p>
+            This program demonstrates fetching data using Promises with a random success/failure rate,
+            and handling the outcome using <code>async/await</code> and <code>try...catch</code>.
+            Click the button multiple times to see both success and error scenarios.
+        </p>
+
+        <h2>Code Logic:</h2>
+        <pre><code id="codeSnippet">
+/**
+ * fetchData function
+ * Simulates an API call that resolves with data or rejects with an error.
+ * Has a ~50% chance of success or failure.
+ * @returns {Promise<string>} A Promise that resolves with a success message or rejects with an error message.
+ */
+function fetchData() {
+  return new Promise((resolve, reject) => {
+    // Simulate network delay
+    setTimeout(() => {
+      // Generate a random number between 0 and 1
+      const isSuccess = Math.random() > 0.5; // 50% chance of success
+
+      if (isSuccess) {
+        resolve("Data successfully retrieved!");
+      } else {
+        reject("Network error or server unavailable.");
+      }
+    }, 1000); // Simulate 1 second delay
+  });
+}
+
+/**
+ * fetchDataHandler (async function)
+ * Uses async/await and try...catch to handle the outcome of fetchData.
+ */
+async function fetchDataHandler() {
+  console.log("Attempting to fetch data...");
+  addOutput("Attempting to fetch data...", "info-message");
+
+  try {
+    const data = await fetchData(); // Wait for the promise to settle
+    console.log("Success:", data);
+    addOutput(`<span class="success-message">Fetched data successfully!</span> <br> ${data}`);
+  } catch (error) {
+    console.error("Error:", error);
+    addOutput(`<span class="error-message">Error fetching data:</span> <br> ${error}`);
+  } finally {
+    console.log("Fetch attempt finished.");
+    addOutput("Fetch attempt finished.", "info-message");
+  }
+}
+
+// fetchDataHandler(); // Call this via button click
+        </code></pre>
+
+        <button onclick="fetchDataHandler()">Fetch Data</button>
+
+        <div id="output">
+            Click the "Fetch Data" button to simulate an API call.
+        </div>
+    </div>
+
+    <script>
+        const outputDiv = document.getElementById('output');
+
+        /**
+         * Helper function to add messages to the UI output div.
+         * @param {string} message - The HTML message to display.
+         * @param {string} className - Optional CSS class for styling the message.
+         */
+        function addOutput(message, className = '') {
+            const p = document.createElement('p');
+            p.innerHTML = message;
+            p.className = `output-line ${className}`;
+            outputDiv.appendChild(p);
+            outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
+        }
+
+        /**
+         * fetchData function
+         * Simulates an API call that resolves with data or rejects with an error.
+         * Has a ~50% chance of success or failure.
+         * @returns {Promise<string>} A Promise that resolves with a success message or rejects with an error message.
+         */
+        function fetchData() {
+            return new Promise((resolve, reject) => {
+                // Simulate network delay
+                setTimeout(() => {
+                    // Generate a random number between 0 (inclusive) and 1 (exclusive)
+                    const randomNumber = Math.random();
+                    // If the random number is greater than 0.5, it's a "success"
+                    const isSuccess = randomNumber > 0.5; // This gives roughly a 50% chance
+
+                    if (isSuccess) {
+                        resolve("Data successfully retrieved!");
+                    } else {
+                        // If it's 0.5 or less, it's a "failure"
+                        reject("Network error or server unavailable.");
+                    }
+                }, 1000); // Simulate 1 second delay
+            });
+        }
+
+        /**
+         * fetchDataHandler (async function)
+         * Uses async/await and try...catch to handle the outcome of fetchData.
+         */
+        async function fetchDataHandler() {
+            outputDiv.innerHTML = ''; // Clear previous output for new attempt
+            console.clear(); // Clear console for a fresh run
+
+            console.log("Attempting to fetch data...");
+            addOutput("Attempting to fetch data...", "info-message");
+
+            try {
+                // Await the result of the fetchData Promise
+                // If it resolves, 'data' will contain the resolved value.
+                const data = await fetchData(); 
+                console.log("Success:", data);
+                addOutput(`<span class="success-message">Fetched data successfully!</span> <br> ${data}`);
+            } catch (error) {
+                // If fetchData rejects, the 'catch' block will be executed,
+                // and 'error' will contain the rejected value.
+                console.error("Error:", error);
+                addOutput(`<span class="error-message">Error fetching data:</span> <br> ${error}`);
+            } finally {
+                // The 'finally' block always executes, regardless of success or failure.
+                console.log("Fetch attempt finished.");
+                addOutput("Fetch attempt finished.", "info-message");
+            }
+        }
+    </script>
+</body>
+</html>

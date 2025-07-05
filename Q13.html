@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Account with Closures</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles to enhance responsiveness and visual appeal */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #e0f2f7; /* Light blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid #cfd8dc; /* Subtle border */
+        }
+        h1 {
+            color: #1a237e; /* Darker blue for heading */
+            font-size: 2rem; /* Larger font size */
+            margin-bottom: 25px;
+            font-weight: 700; /* Bold font */
+        }
+        p {
+            color: #455a64; /* Softer text color */
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #37474f;
+            margin-bottom: 5px;
+        }
+        .input-group input[type="number"] {
+            padding: 10px 15px;
+            border: 1px solid #b0bec5; /* Light grey border */
+            border-radius: 8px;
+            width: 80%; /* Fluid width */
+            max-width: 250px; /* Max width for input */
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .input-group input[type="number"]:focus {
+            border-color: #2196f3; /* Blue on focus */
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            gap: 12px;
+            margin-top: 25px;
+        }
+        button {
+            background-color: #42a5f5; /* Light blue button */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            min-width: 120px; /* Ensure buttons have minimum width */
+        }
+        button:hover {
+            background-color: #2196f3; /* Darker blue on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #b3e5fc; /* Lighter blue border */
+            border-radius: 8px;
+            background-color: #e3f2fd; /* Very light blue background */
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align text to start */
+            font-weight: bold;
+            color: #0d47a1; /* Dark blue text */
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.08);
+            text-align: left; /* Ensure text alignment for multiple lines */
+        }
+        .output-line {
+            width: 100%;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px dotted rgba(13, 71, 161, 0.2); /* Dotted separator */
+        }
+        .output-line:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        .output-success {
+            color: #2e7d32; /* Darker green */
+        }
+        .output-error {
+            color: #d32f2f; /* Darker red */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .button-group button {
+                width: 100%;
+            }
+            .input-group input[type="number"] {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="container bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl font-extrabold mb-6 text-gray-900">Secure Bank Account</h1>
+        <p class="text-gray-700 mb-6">
+            Demonstrates data privacy and encapsulation using JavaScript closures.
+            The account balance is private and can only be managed through the provided methods.
+        </p>
+
+        <div class="input-group">
+            <label for="initialBalance" class="text-gray-700">Set Initial Balance:</label>
+            <input type="number" id="initialBalance" placeholder="e.g., 1000" class="form-input" min="0">
+            <button onclick="createAccount()" class="w-full sm:w-auto">Create Account</button>
+        </div>
+
+        <div id="accountControls" class="hidden">
+            <div class="input-group">
+                <label for="amount" class="text-gray-700">Amount:</label>
+                <input type="number" id="amount" placeholder="e.g., 50" class="form-input" min="1">
+            </div>
+
+            <div class="button-group">
+                <button onclick="deposit()" class="deposit-button">Deposit</button>
+                <button onclick="withdraw()" class="withdraw-button">Withdraw</button>
+                <button onclick="getBalance()" class="get-balance-button">Get Balance</button>
+            </div>
+        </div>
+
+        <div id="output" class="text-base text-blue-900">
+            <div class="output-line output-info">Enter an initial balance and click 'Create Account'.</div>
+        </div>
+    </div>
+
+    <script>
+        // Global variable to hold our bank account instance
+        // This will be assigned the object returned by createBankAccount
+        let bankAccountInstance = null;
+
+        /**
+         * createBankAccount function
+         * This function acts as a factory for bank account objects.
+         * It encapsulates the 'balance' variable, making it private.
+         * @param {number} initialBalance - The starting balance for the account.
+         * @returns {object} An object containing methods to interact with the account.
+         */
+        function createBankAccount(initialBalance) {
+            // Private variable 'balance'
+            // This is encapsulated within the closure and cannot be directly accessed from outside.
+            let balance = initialBalance;
+
+            // Return an object with public methods
+            return {
+                /**
+                 * deposit method
+                 * Increases the account balance by the given amount.
+                 * @param {number} amount - The amount to deposit. Must be positive.
+                 * @returns {number|string} The new balance if successful, or an error message.
+                 */
+                deposit: function(amount) {
+                    if (amount <= 0 || isNaN(amount)) {
+                        return "Deposit amount must be a positive number.";
+                    }
+                    balance += amount;
+                    return balance;
+                },
+
+                /**
+                 * withdraw method
+                 * Decreases the account balance by the given amount, if funds are sufficient.
+                 * @param {number} amount - The amount to withdraw. Must be positive.
+                 * @returns {number|string} The new balance if successful, or an error message.
+                 */
+                withdraw: function(amount) {
+                    if (amount <= 0 || isNaN(amount)) {
+                        return "Withdrawal amount must be a positive number.";
+                    }
+                    if (balance >= amount) {
+                        balance -= amount;
+                        return balance;
+                    } else {
+                        return "Insufficient funds. Current balance: $" + balance.toFixed(2);
+                    }
+                },
+
+                /**
+                 * getBalance method
+                 * Returns the current balance of the account.
+                 * @returns {number} The current account balance.
+                 */
+                getBalance: function() {
+                    return balance;
+                }
+            };
+        }
+
+        // --- UI Interaction Functions ---
+
+        /**
+         * Handles creating the bank account instance.
+         */
+        function createAccount() {
+            const initialBalanceInput = document.getElementById('initialBalance');
+            let initialBalance = parseFloat(initialBalanceInput.value);
+
+            if (isNaN(initialBalance) || initialBalance < 0) {
+                addOutput('<span class="output-error">Please enter a valid non-negative initial balance.</span>');
+                return;
+            }
+
+            // Create the bank account instance using the closure
+            bankAccountInstance = createBankAccount(initialBalance);
+            addOutput(`<span class="output-success">Account created with initial balance: $${initialBalance.toFixed(2)}</span>`);
+            document.getElementById('accountControls').classList.remove('hidden'); // Show controls
+            initialBalanceInput.value = ''; // Clear input
+            document.getElementById('amount').value = ''; // Clear amount input
+        }
+
+        /**
+         * Handles deposit operation.
+         */
+        function deposit() {
+            if (!bankAccountInstance) {
+                addOutput('<span class="output-error">Please create an account first.</span>');
+                return;
+            }
+            const amountInput = document.getElementById('amount');
+            let amount = parseFloat(amountInput.value);
+
+            const result = bankAccountInstance.deposit(amount);
+            if (typeof result === 'number') {
+                addOutput(`<span class="output-success">Deposited $${amount.toFixed(2)}. New balance: $${result.toFixed(2)}</span>`);
+            } else {
+                addOutput(`<span class="output-error">${result}</span>`);
+            }
+            amountInput.value = ''; // Clear amount input
+            console.log("Current balance after deposit:", bankAccountInstance.getBalance());
+        }
+
+        /**
+         * Handles withdrawal operation.
+         */
+        function withdraw() {
+            if (!bankAccountInstance) {
+                addOutput('<span class="output-error">Please create an account first.</span>');
+                return;
+            }
+            const amountInput = document.getElementById('amount');
+            let amount = parseFloat(amountInput.value);
+
+            const result = bankAccountInstance.withdraw(amount);
+            if (typeof result === 'number') {
+                addOutput(`<span class="output-success">Withdrew $${amount.toFixed(2)}. New balance: $${result.toFixed(2)}</span>`);
+            } else {
+                addOutput(`<span class="output-error">${result}</span>`);
+            }
+            amountInput.value = ''; // Clear amount input
+            console.log("Current balance after withdrawal:", bankAccountInstance.getBalance());
+        }
+
+        /**
+         * Handles getBalance operation.
+         */
+        function getBalance() {
+            if (!bankAccountInstance) {
+                addOutput('<span class="output-error">Please create an account first.</span>');
+                return;
+            }
+            const currentBalance = bankAccountInstance.getBalance();
+            addOutput(`<span class="output-info">Current Balance: $${currentBalance.toFixed(2)}</span>`);
+            console.log("Current balance:", currentBalance);
+        }
+
+        /**
+         * Helper function to add messages to the output display.
+         * @param {string} message - The HTML message to display.
+         */
+        function addOutput(message) {
+            const outputDiv = document.getElementById('output');
+            const p = document.createElement('p');
+            p.innerHTML = message;
+            p.className = 'output-line';
+            outputDiv.appendChild(p);
+            // Limit the number of messages to prevent overflow
+            if (outputDiv.children.length > 5) {
+                outputDiv.removeChild(outputDiv.children[0]);
+            }
+            outputDiv.scrollTop = outputDiv.scrollHeight; // Scroll to bottom
+        }
+    </script>
+</body>
+</html>

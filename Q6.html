@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON.stringify() Example</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+        pre {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #34495e;
+            border: 1px solid #c9d2d7;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            font-weight: bold;
+            color: #2c3e50;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            text-align: left;
+        }
+        .output-line {
+            margin-bottom: 5px;
+        }
+        .output-line:last-child {
+            margin-bottom: 0;
+        }
+        .output-success {
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="container bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-2xl font-bold mb-6 text-gray-800">JSON.stringify() Object Example</h1>
+
+        <p class="text-gray-600 mb-4">
+            This example demonstrates how to convert a JavaScript object into a JSON string using <code>JSON.stringify()</code>.
+            The result will be logged to the console and displayed below.
+        </p>
+
+        <pre><code>
+let student = {
+  name: "Alice",
+  age: 22,
+  course: "Computer Science"
+};
+
+let jsonString = JSON.stringify(student);
+
+// Expected Output (in console):
+// {"name":"Alice","age":22,"course":"Computer Science"}
+// (This is a string)
+        </code></pre>
+
+        <button onclick="convertObjectToJson()">Convert Object to JSON</button>
+
+        <div id="output" class="text-base">
+            <div class="output-line">Click the button to see the output.</div>
+        </div>
+    </div>
+
+    <script>
+        function convertObjectToJson() {
+            // 1. Create a simple JavaScript object
+            let student = {
+                name: "Alice",
+                age: 22,
+                course: "Computer Science"
+            };
+
+            // 2. Use JSON.stringify() to convert the object into a JSON string
+            let jsonString = JSON.stringify(student);
+
+            // Log the original object and the JSON string to the console
+            console.log("Original JavaScript Object:", student);
+            console.log("Converted JSON String:", jsonString);
+            console.log("Type of jsonString:", typeof jsonString); // Should be 'string'
+
+            // Display output in the UI
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = `
+                <div class="output-line"><strong>Original Object:</strong></div>
+                <div class="output-line">${JSON.stringify(student, null, 2)}</div>
+                <div class="output-line"><strong>Converted JSON String:</strong></div>
+                <div class="output-line output-success">${jsonString}</div>
+                <div class="output-line"><em>(Also check your browser's console for more details!)</em></div>
+            `;
+        }
+    </script>
+</body>
+</html>

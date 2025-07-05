@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive DOM Manipulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f4f8; /* Light blue-grey background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to start for content flow */
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 8px;
+            text-align: left;
+            width: 100%; /* Make label take full width */
+        }
+        .input-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .input-group input[type="text"]:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            flex-grow: 1; /* Allow buttons to grow */
+            max-width: 200px; /* Limit max width for desktop */
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        #targetDiv {
+            min-height: 150px;
+            border: 2px dashed #95a5a6; /* Dashed grey border */
+            border-radius: 8px;
+            background-color: #ecf0f1; /* Light grey default background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            color: #34495e;
+            word-break: break-word; /* Ensure text wraps */
+            text-align: center;
+            transition: background-color 0.3s ease; /* Smooth transition for background change */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 640px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            button {
+                max-width: 100%; /* Buttons take full width on small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dynamic Content & Style Changer</h1>
+
+        <div class="input-group">
+            <label for="colorInput">Enter Color Name:</label>
+            <input type="text" id="colorInput" placeholder="e.g., blue, #FF0000, rgb(0,255,0)">
+        </div>
+
+        <div class="input-group">
+            <label for="textInput">Enter New Text:</label>
+            <input type="text" id="textInput" placeholder="Type new content here...">
+        </div>
+        
+        <div class="button-group">
+            <button id="changeBgBtn">Change Background</button>
+            <button id="updateTextBtn">Update Text</button>
+        </div>
+
+        <div id="targetDiv">
+            This is the target div. Its background and text will change!
+        </div>
+    </div>
+
+    <script>
+        // Get references to DOM elements
+        const colorInput = document.getElementById('colorInput');
+        const textInput = document.getElementById('textInput');
+        const changeBgBtn = document.getElementById('changeBgBtn');
+        const updateTextBtn = document.getElementById('updateTextBtn');
+        const targetDiv = document.getElementById('targetDiv');
+
+        /**
+         * Function to handle changing the background color of the targetDiv.
+         */
+        changeBgBtn.addEventListener('click', function() {
+            const colorName = colorInput.value.trim(); // Get the trimmed value from the input field
+
+            if (colorName === '') {
+                // If the input is empty, alert the user
+                alert("Please enter a color name!"); // Using alert as requested
+                return;
+            }
+
+            // Attempt to set the background color
+            // A simple way to check if a color is 'valid' is to try applying it.
+            // If it's invalid, the browser will usually just ignore the property.
+            // To provide the requested alert, we'll try to apply it and then check.
+            const originalColor = targetDiv.style.backgroundColor; // Store original for validation check
+            targetDiv.style.backgroundColor = colorName;
+
+            // Check if the background color actually changed to the new value.
+            // This is a heuristic; browser might convert 'red' to 'rgb(255, 0, 0)'.
+            // A more robust check might involve creating a dummy element and checking its computed style.
+            // For simplicity and to meet the requirement, we'll check if the *computed* style matches,
+            // or if it reverts to a default/transparent for truly invalid inputs.
+            const computedStyle = window.getComputedStyle(targetDiv);
+            if (computedStyle.backgroundColor === originalColor && colorName !== originalColor && !isValidCssColor(colorName)) {
+                // If it didn't change (and wasn't already that color) and isn't a known CSS color keyword, it's likely invalid.
+                alert("Invalid color name!"); // Using alert as requested
+                targetDiv.style.backgroundColor = originalColor; // Revert to original if invalid
+            } else {
+                console.log(`Background color changed to: ${colorName}`);
+            }
+            colorInput.value = ''; // Clear the input field after use
+        });
+
+        /**
+         * Helper function to perform a basic check for a valid CSS color string.
+         * This is not exhaustive but covers common cases for this problem.
+         * For a full solution, one might check a list of named colors or regex for hex/rgb/rgba.
+         */
+        function isValidCssColor(colorString) {
+            const s = new Option().style;
+            s.color = colorString;
+            // If the color string is valid, setting it will make s.color non-empty (or not just 'initial')
+            // and often converts it to an RGB/RGBA format.
+            return s.color !== ''; // A very simple heuristic
+        }
+
+
+        /**
+         * Function to handle updating the text content of the targetDiv.
+         */
+        updateTextBtn.addEventListener('click', function() {
+            const newText = textInput.value.trim(); // Get the trimmed value from the input field
+
+            if (newText === '') {
+                // If the input field is empty, alert the user
+                alert("Please enter some text!"); // Using alert as requested
+            } else {
+                // Update the text content of the targetDiv
+                targetDiv.textContent = newText;
+                console.log(`Text content updated to: "${newText}"`);
+                textInput.value = ''; // Clear the input field after use
+            }
+        });
+
+        // Note: In a production environment, 'alert()' is generally avoided for better user experience.
+        // Custom modal dialogs or non-blocking notifications are preferred.
+    </script>
+</body>
+</html>

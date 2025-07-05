@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM Manipulation Demonstration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 20px;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 10px;
+            border-bottom: 2px solid #a7d9e2;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            background-color: #ffffff; /* Default white background for container */
+        }
+        p {
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- H1 element to be manipulated by its ID -->
+    <h1 id="main-heading">Original Heading Text</h1>
+
+    <!-- Div with class 'container' to be manipulated by querySelector -->
+    <div class="container">
+        <h2>About This Demo</h2>
+        <!-- Multiple P elements to be manipulated by tag name -->
+        <p>This is the first paragraph. Its text color will be changed to blue using JavaScript's `getElementsByTagName` method.</p>
+        <p>This is the second paragraph. All paragraphs on this page will receive the same blue color once the script runs, showcasing bulk manipulation.</p>
+        <p>This third paragraph also demonstrates the `getElementsByTagName` selection. It's a powerful way to target all instances of a specific HTML tag.</p>
+    </div>
+
+    <div class="container">
+        <h2>Another Section</h2>
+        <p>This is another paragraph in a second container. Note how only the *first* container's background changes because of `querySelector`.</p>
+    </div>
+
+    <script>
+        // 1. Select the H1 element by its ID and change its text content.
+        const mainHeading = document.getElementById('main-heading');
+        if (mainHeading) { // Always good practice to check if the element exists
+            mainHeading.textContent = "Welcome to the DOM World!";
+            console.log("H1 text changed successfully!");
+        } else {
+            console.error("Element with ID 'main-heading' not found.");
+        }
+
+        // 2. Select all P elements using getElementsByTagName and set their text color to blue.
+        // getElementsByTagName returns an HTMLCollection, which is not a true Array.
+        // We can iterate it with a traditional for loop or convert it to an Array.
+        const paragraphs = document.getElementsByTagName('p');
+        for (let i = 0; i < paragraphs.length; i++) {
+            paragraphs[i].style.color = 'blue';
+        }
+        console.log("All paragraphs' text color changed to blue!");
+
+        // 3. Use querySelector to select the first DIV with the class 'container'
+        //    and change its background color to yellow.
+        const firstContainer = document.querySelector('.container');
+        if (firstContainer) { // Check if the element was found
+            firstContainer.style.backgroundColor = 'yellow';
+            console.log("First container's background changed to yellow!");
+        } else {
+            console.error("Element with class 'container' not found.");
+        }
+    </script>
+</body>
+</html>
